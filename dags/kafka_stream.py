@@ -5,10 +5,11 @@ import json
 import requests
 from kafka import KafkaProducer
 import time
+import logging
 
 default_args = {
-    'owner': 'Moiz101',
-    'start_date': datetime(2024, 11, 25, 9, 00)
+    'owner': 'moiz101',
+    'start_date': datetime(2024, 12, 25, 2, 30)
 }
 
 def get_data():
@@ -37,15 +38,19 @@ def format_data(res):
     return data
 
 def stream_data():
-    res = get_data()
-    res = format_data(res)
-    print(json.dumps(res, indent=3))
+    producer = KafkaProducer(bootstrap_servers=['broker:29092'], max_block_ms = 15000)
+    curr_time = time.time()
 
-    producer = KafkaProducer(bootstrap_servers=['broker:29092'], max_block_ms = 5000)
-
-    producer.send('users_created', json.dumps(res).encode('utf-8'))
-
-stream_data()
+    while True:
+        if time.time() > curr_time + 60:
+            break
+        try:
+            res = get_data()
+            res = format_data(res)
+            producer.send('users_created', json.dumps(res).encode('utf-8'))
+        except Exception as e:
+            logging.error(f'An error occured: {e}')
+            continue
 
 with DAG('user_automation',
          default_args=default_args,
