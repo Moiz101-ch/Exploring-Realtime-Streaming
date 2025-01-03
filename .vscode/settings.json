@@ -1,0 +1,5 @@
+{
+    "terminal.integrated.env.windows": {
+        "PATH": "C:\\Program Files\\scala-2.13.15\\bin;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path;${env:PATH}"
+    }
+}
